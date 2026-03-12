@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PeopleDown Analytics — Real-Time Lead Intelligence</title>
+<meta name="description" content="Track every lead, every click, every conversion. Real-time analytics that actually work.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-primary: #06060a;
+  --bg-secondary: #0c0c14;
+  --bg-card: #111119;
+  --bg-card-hover: #16161f;
+  --border: #1e1e2e;
+  --border-accent: #2a2a3e;
+  --text-primary: #f0f0f5;
+  --text-secondary: #8888a0;
+  --text-muted: #55556a;
+  --violet: #8b5cf6;
+  --violet-glow: rgba(139, 92, 246, 0.15);
+  --cyan: #06b6d4;
+  --cyan-glow: rgba(6, 182, 212, 0.15);
+  --emerald: #10b981;
+  --emerald-glow: rgba(16, 185, 129, 0.15);
+  --pink: #ec4899;
+  --pink-glow: rgba(236, 72, 153, 0.15);
+  --yellow: #f59e0b;
+  --yellow-glow: rgba(245, 158, 11, 0.15);
+  --red: #ef4444;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════ NOISE TEXTURE ═══════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ═══════ SCROLL REVEAL ═══════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ═══════ LAYOUT ═══════ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section {
+  padding: 120px 0;
+  position: relative;
+}
+
+/* ═══════ NAV ═══════ */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 16px 0;
+  background: rgba(6, 6, 10, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s;
+}
+nav.scrolled { border-bottom-color: var(--border); }
+nav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.nav-logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; color: white;
+}
+.nav-logo-text {
+  font-weight: 700; font-size: 16px; color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--text-primary); }
+
+/* ═══════ HERO ═══════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(ellipse, var(--violet-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  right: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(ellipse, var(--cyan-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-content {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid var(--border-accent);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  background: var(--bg-card);
+}
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  background: var(--emerald);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+}
+.hero h1 {
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+}
+.hero h1 .gradient-text {
+  background: linear-gradient(135deg, var(--violet) 0%, var(--cyan) 50%, var(--emerald) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 48px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.hero-cta-group {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ═══════ BUTTONS ═══════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--violet), #7c3aed);
+  color: white;
+  box-shadow: 0 4px 24px rgba(139, 92, 246, 0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.4);
+}
+.btn-ghost {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-accent);
+}
+.btn-ghost:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--text-muted);
+}
+
+/* ═══════ STATS BAR ═══════ */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 80px;
+}
+.stat-item {
+  background: var(--bg-card);
+  padding: 32px;
+  text-align: center;
+}
+.stat-number {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.stat-number.violet { color: var(--violet); }
+.stat-number.cyan { color: var(--cyan); }
+.stat-number.emerald { color: var(--emerald); }
+.stat-number.pink { color: var(--pink); }
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════ SECTION HEADERS ═══════ */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+.section-label.violet { color: var(--violet); }
+.section-label.cyan { color: var(--cyan); }
+.section-label.emerald { color: var(--emerald); }
+.section-label.pink { color: var(--pink); }
+.section-label.yellow { color: var(--yellow); }
+.section-label::before {
+  content: '';
+  width: 20px; height: 1px;
+}
+.section-label.violet::before { background: var(--violet); }
+.section-label.cyan::before { background: var(--cyan); }
+.section-label.emerald::before { background: var(--emerald); }
+.section-label.pink::before { background: var(--pink); }
+.section-label.yellow::before { background: var(--yellow); }
+
+.section-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.section-desc {
+  font-size: 17px;
+  color: var(--text-secondary);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+/* ═══════ DASHBOARD PREVIEW ═══════ */
+.dashboard-section { background: var(--bg-secondary); }
+
+.dashboard-preview {
+  margin-top: 64px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+}
+.dash-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+.dash-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dash-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dash-dot.r { background: #ef4444; }
+.dash-dot.y { background: #f59e0b; }
+.dash-dot.g { background: #10b981; }
+.dash-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.dash-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+}
+.dash-sidebar {
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+}
+.dash-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+.dash-nav-item.active {
+  color: var(--violet);
+  background: var(--violet-glow);
+  border-right: 2px solid var(--violet);
+}
+.dash-nav-icon {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  opacity: 0.6;
+}
+.dash-main { padding: 24px; }
+.dash-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.dash-kpi {
+  padding: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.dash-kpi-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+.dash-kpi-value {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.dash-kpi-change {
+  font-size: 11px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+.dash-kpi-change.up { color: var(--emerald); }
+.dash-kpi-change.down { color: var(--red); }
+.dash-chart {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+.dash-chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+/* Chart SVG */
+.chart-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.chart-area {
+  opacity: 0.15;
+}
+
+/* ═══════ FEATURES GRID ═══════ */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 64px;
+}
+.feature-card {
+  background: var(--bg-card);
+  padding: 40px;
+  transition: background 0.3s;
+  position: relative;
+}
+.feature-card:hover { background: var(--bg-card-hover); }
+.feature-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+.feature-icon.violet { background: var(--violet-glow); color: var(--violet); border: 1px solid rgba(139,92,246,0.2); }
+.feature-icon.cyan { background: var(--cyan-glow); color: var(--cyan); border: 1px solid rgba(6,182,212,0.2); }
+.feature-icon.emerald { background: var(--emerald-glow); color: var(--emerald); border: 1px solid rgba(16,185,129,0.2); }
+.feature-icon.pink { background: var(--pink-glow); color: var(--pink); border: 1px solid rgba(236,72,153,0.2); }
+.feature-icon.yellow { background: var(--yellow-glow); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+.feature-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.feature-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ═══════ HOW IT WORKS ═══════ */
+.how-section { background: var(--bg-secondary); }
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 64px;
+}
+.step {
+  position: relative;
+  padding: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.3s;
+}
+.step:hover { border-color: var(--border-accent); }
+.step-number {
+  position: absolute;
+  top: -16px;
+  left: 32px;
+  width: 32px; height: 32px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--violet);
+  font-family: 'JetBrains Mono', monospace;
+}
+.step h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  margin-top: 8px;
+}
+.step p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.step-code {
+  margin-top: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.8;
+}
+.step-code .tag { color: var(--pink); }
+.step-code .attr { color: var(--yellow); }
+.step-code .str { color: var(--emerald); }
+.step-code .comment { color: var(--text-muted); }
+
+/* ═══════ TRACKING SECTION ═══════ */
+.tracking-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  margin-top: 64px;
+}
+.tracking-visual {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.tracking-visual-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.tracking-visual-body { padding: 20px; }
+.tracking-event {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tracking-event:last-child { border-bottom: none; }
+.tracking-event-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.tracking-event-dot.visit { background: var(--cyan); }
+.tracking-event-dot.form { background: var(--emerald); }
+.tracking-event-dot.convert { background: var(--violet); }
+.tracking-event-type {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.tracking-event-detail {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+.tracking-event-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.tracking-features { display: flex; flex-direction: column; gap: 24px; }
+.tracking-feature {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.tracking-feature-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+.tracking-feature h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.tracking-feature p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ═══════ SECURITY ═══════ */
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 64px;
+}
+.security-card {
+  padding: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.3s;
+}
+.security-card:hover { border-color: var(--border-accent); }
+.security-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.security-card ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.security-card li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.security-card li::before {
+  content: '✓';
+  color: var(--emerald);
+  font-weight: 700;
+  font-size: 12px;
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--emerald-glow);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* ═══════ LEADS TABLE PREVIEW ═══════ */
+.table-preview {
+  margin-top: 64px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.3);
+}
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.table-search {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+}
+.table-filter {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.table-toolbar-right {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.table-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.table-btn.primary {
+  background: var(--violet);
+  border-color: var(--violet);
+  color: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  padding: 12px 24px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+td {
+  padding: 14px 24px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+tr:hover td { background: var(--bg-card-hover); }
+.td-name { color: var(--text-primary); font-weight: 500; }
+.td-email { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.status-badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.status-badge.qualified { background: var(--emerald-glow); color: var(--emerald); border: 1px solid rgba(16,185,129,0.2); }
+.status-badge.lead { background: var(--cyan-glow); color: var(--cyan); border: 1px solid rgba(6,182,212,0.2); }
+.status-badge.converted { background: var(--violet-glow); color: var(--violet); border: 1px solid rgba(139,92,246,0.2); }
+.status-badge.disqualified { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+/* ═══════ CTA SECTION ═══════ */
+.cta-section {
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 500px;
+  background: radial-gradient(ellipse, var(--violet-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-box {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 80px 60px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.cta-box h2 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+}
+.cta-box p {
+  font-size: 17px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  line-height: 1.7;
+}
+
+/* ═══════ FOOTER ═══════ */
+footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+footer p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ═══════ DIVIDER ═══════ */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+  margin: 0;
+}
+
+/* ═══════ RESPONSIVE ═══════ */
+@media (max-width: 900px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .tracking-layout { grid-template-columns: 1fr; }
+  .security-grid { grid-template-columns: 1fr; }
+  .dash-body { grid-template-columns: 1fr; }
+  .dash-sidebar { display: none; }
+  .dash-kpis { grid-template-columns: repeat(2, 1fr); }
+  .nav-links { display: none; }
+  .table-toolbar { display: none; }
+  th:nth-child(3), td:nth-child(3),
+  th:nth-child(5), td:nth-child(5),
+  th:nth-child(6), td:nth-child(6) { display: none; }
+}
+@media (max-width: 600px) {
+  .stats-bar { grid-template-columns: 1fr; }
+  section { padding: 80px 0; }
+  .dash-kpis { grid-template-columns: 1fr 1fr; }
+  .cta-box { padding: 48px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ NAV ═══════ -->
+<nav id="nav">
+  <div class="container">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">PD</div>
+      <span class="nav-logo-text">PeopleDown</span>
+    </a>
+    <div class="nav-links">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#features">Features</a>
+      <a href="#tracking">Tracking</a>
+      <a href="#leads">Leads</a>
+      <a href="#security">Security</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge reveal">
+        <span class="dot"></span>
+        Real-time lead intelligence
+      </div>
+      <h1 class="reveal reveal-delay-1">
+        Every lead.<br>
+        <span class="gradient-text">Every click. Tracked.</span>
+      </h1>
+      <p class="hero-sub reveal reveal-delay-2">
+        Know exactly where your leads come from, which ads convert, and who's ready to close — all updating in real time.
+      </p>
+      <div class="hero-cta-group reveal reveal-delay-3">
+        <a href="#dashboard" class="btn btn-primary">See it in action ↓</a>
+        <a href="#tracking" class="btn btn-ghost">How tracking works</a>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="stats-bar reveal reveal-delay-4">
+        <div class="stat-item">
+          <div class="stat-number violet">100%</div>
+          <div class="stat-label">Attribution</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number cyan">&lt;3min</div>
+          <div class="stat-label">Refresh cycle</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number emerald">AES-256</div>
+          <div class="stat-label">Encryption</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number pink">1-line</div>
+          <div class="stat-label">Integration</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ DASHBOARD PREVIEW ═══════ -->
+<section class="dashboard-section" id="dashboard">
+  <div class="container">
+    <div class="section-label violet reveal">Dashboard</div>
+    <h2 class="section-title reveal">Your command center.<br>Always up to date.</h2>
+    <p class="section-desc reveal">Every metric, every trend, every campaign — in one view. Auto-refreshes every 3 minutes so you never miss a beat.</p>
+
+    <div class="dashboard-preview reveal">
+      <div class="dash-topbar">
+        <div class="dash-topbar-left">
+          <span class="dash-dot r"></span>
+          <span class="dash-dot y"></span>
+          <span class="dash-dot g"></span>
+        </div>
+        <span class="dash-url">gamesysoperations.com</span>
+      </div>
+      <div class="dash-body">
+        <div class="dash-sidebar">
+          <div class="dash-nav-item active">
+            <svg class="dash-nav-icon" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="10" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="10" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+            Dashboard
+          </div>
+          <div class="dash-nav-item">
+            <svg class="dash-nav-icon" viewBox="0 0 18 18" fill="none"><path d="M13 15V13C13 11.3 11.7 10 10 10H8C6.3 10 5 11.3 5 13V15" stroke="currentColor" stroke-width="1.3"/><circle cx="9" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/></svg>
+            Leads
+          </div>
+          <div class="dash-nav-item">
+            <svg class="dash-nav-icon" viewBox="0 0 18 18" fill="none"><polyline points="2,13 6,7 10,10 16,3" stroke="currentColor" stroke-width="1.3" fill="none"/><polyline points="12,3 16,3 16,7" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>
+            Site Analytics
+          </div>
+          <div class="dash-nav-item">
+            <svg class="dash-nav-icon" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.3 3.3l1.4 1.4M13.3 13.3l1.4 1.4M3.3 14.7l1.4-1.4M13.3 4.7l1.4-1.4" stroke="currentColor" stroke-width="1.3"/></svg>
+            Settings
+          </div>
+        </div>
+        <div class="dash-main">
+          <div class="dash-kpis">
+            <div class="dash-kpi">
+              <div class="dash-kpi-label">Total Leads</div>
+              <div class="dash-kpi-value" style="color:var(--violet)">2,847</div>
+              <div class="dash-kpi-change up">↑ 12.3% vs last month</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-label">Today</div>
+              <div class="dash-kpi-value" style="color:var(--cyan)">34</div>
+              <div class="dash-kpi-change up">↑ 8 more than yesterday</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-label">Qualified</div>
+              <div class="dash-kpi-value" style="color:var(--emerald)">1,204</div>
+              <div class="dash-kpi-change up">42.3% qualification rate</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-label">Converted</div>
+              <div class="dash-kpi-value" style="color:var(--pink)">389</div>
+              <div class="dash-kpi-change up">13.7% conversion rate</div>
+            </div>
+          </div>
+          <div class="dash-chart">
+            <div class="dash-chart-title">Daily Leads — Last 30 Days</div>
+            <svg viewBox="0 0 700 130" width="100%" height="130" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--violet)" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="var(--violet)" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path class="chart-area" d="M0,100 L23,92 46,88 69,75 92,80 115,65 138,70 161,55 184,60 207,45 230,50 253,38 276,42 299,35 322,40 345,30 368,35 391,25 414,30 437,22 460,28 483,18 506,22 529,15 552,20 575,12 598,18 621,8 644,12 667,5 690,8 700,6 700,130 0,130Z" fill="url(#areaGrad)"/>
+              <polyline class="chart-line" stroke="var(--violet)" points="0,100 23,92 46,88 69,75 92,80 115,65 138,70 161,55 184,60 207,45 230,50 253,38 276,42 299,35 322,40 345,30 368,35 391,25 414,30 437,22 460,28 483,18 506,22 529,15 552,20 575,12 598,18 621,8 644,12 667,5 690,8"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════ FEATURES ═══════ -->
+<section id="features">
+  <div class="container">
+    <div class="section-label cyan reveal">Features</div>
+    <h2 class="section-title reveal">Everything you need.<br>Nothing you don't.</h2>
+    <p class="section-desc reveal">Built for teams that track real campaigns with real money. No fluff, no vanity metrics — just the data that moves the needle.</p>
+
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon violet">⚡</div>
+        <h3>Real-Time Dashboard</h3>
+        <p>KPIs, charts, and campaign breakdown — auto-refreshing every 3 minutes. See today's leads, qualification rates, and conversion trends at a glance.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-1">
+        <div class="feature-icon cyan">🎯</div>
+        <h3>Full Attribution</h3>
+        <p>Track UTM source, medium, campaign, ad name, fbclid, gclid — all the way from first click to conversion. Know exactly which ad produced which lead.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-2">
+        <div class="feature-icon emerald">📊</div>
+        <h3>Site Analytics</h3>
+        <p>Visits, sessions, top pages, referrers, hourly distribution, and traffic sources — broken down per site with Meta vs Organic comparison.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-3">
+        <div class="feature-icon pink">📋</div>
+        <h3>Lead Management</h3>
+        <p>Filter by date, campaign, status. Search by name, email, phone. Update status (lead → qualified → converted). Add internal notes. All from one table.</p>
+      </div>
+      <div class="feature-card reveal reveal-delay-4">
+        <div class="feature-icon yellow">📤</div>
+        <h3>Excel Export</h3>
+        <p>Export leads to .xlsx with customizable columns. Respects all active filters — export only what matters. Audit-logged for compliance.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon emerald">🔗</div>
+        <h3>Google Sheets Sync</h3>
+        <p>Pull leads from Google Sheets automatically. Bi-directional — status changes write back to the sheet. Deduplicates on every sync.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════ HOW IT WORKS ═══════ -->
+<section class="how-section" id="tracking">
+  <div class="container">
+    <div class="section-label emerald reveal">Integration</div>
+    <h2 class="section-title reveal">One script tag.<br>That's it.</h2>
+    <p class="section-desc reveal">Drop a single line of code on your website. We handle page views, form submissions, UTM capture, and session tracking automatically.</p>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-number">01</div>
+        <h3>Add the script</h3>
+        <p>One line in your HTML. The script loads asynchronously — zero impact on page speed.</p>
+        <div class="step-code"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://your-domain.com
+  /api/tracking/script?site=yoursite.com"</span><span class="tag">&gt;&lt;/script&gt;</span></div>
+      </div>
+      <div class="step reveal reveal-delay-1">
+        <div class="step-number">02</div>
+        <h3>Track form submissions</h3>
+        <p>Call one function when your form submits. Name, email, phone — we encrypt and store everything.</p>
+        <div class="step-code"><span class="comment">// On form submit:</span>
+<span class="attr">PeopleDown</span>.trackLead({
+  <span class="str">name</span>: formData.name,
+  <span class="str">email</span>: formData.email,
+  <span class="str">phone</span>: formData.phone
+})</div>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-number">03</div>
+        <h3>See it in real time</h3>
+        <p>Leads appear in your dashboard instantly. Full attribution chain — from ad click to form fill — visible on every lead.</p>
+        <div class="step-code"><span class="comment">// What you see:</span>
+<span class="str">Lead</span>: Ana M. → <span class="attr">qualified</span>
+<span class="str">Source</span>: facebook / cpc
+<span class="str">Campaign</span>: br_invest_mar26
+<span class="str">Landing</span>: /registration
+<span class="str">Time</span>: 2 minutes ago</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════ LIVE EVENT FEED ═══════ -->
+<section>
+  <div class="container">
+    <div class="tracking-layout">
+      <div class="tracking-visual reveal">
+        <div class="tracking-visual-header">
+          <span class="dot" style="width:6px;height:6px;background:var(--emerald);border-radius:50%;display:inline-block;animation:pulse-dot 2s ease-in-out infinite"></span>
+          Live Event Feed
+        </div>
+        <div class="tracking-visual-body">
+          <div class="tracking-event">
+            <span class="tracking-event-dot visit"></span>
+            <div>
+              <div class="tracking-event-type" style="color:var(--cyan)">Page View</div>
+              <div class="tracking-event-detail">/registration · binarypulse.pro</div>
+              <div class="tracking-event-detail">utm_source=facebook · utm_campaign=br_invest_mar26</div>
+            </div>
+            <span class="tracking-event-time">12s ago</span>
+          </div>
+          <div class="tracking-event">
+            <span class="tracking-event-dot form"></span>
+            <div>
+              <div class="tracking-event-type" style="color:var(--emerald)">Form Submit</div>
+              <div class="tracking-event-detail">a***@gmail.com · +55 ••• •••-8821</div>
+              <div class="tracking-event-detail">fbclid=IwAR3x... · session ses_1741...</div>
+            </div>
+            <span class="tracking-event-time">12s ago</span>
+          </div>
+          <div class="tracking-event">
+            <span class="tracking-event-dot convert"></span>
+            <div>
+              <div class="tracking-event-type" style="color:var(--violet)">Lead Created</div>
+              <div class="tracking-event-detail">Ana M. → status: lead · encrypted: AES-256-GCM</div>
+              <div class="tracking-event-detail">attribution: facebook → /registration → form_submit</div>
+            </div>
+            <span class="tracking-event-time">12s ago</span>
+          </div>
+          <div class="tracking-event">
+            <span class="tracking-event-dot visit"></span>
+            <div>
+              <div class="tracking-event-type" style="color:var(--cyan)">Page View</div>
+              <div class="tracking-event-detail">/thank-you · binarypulse.pro</div>
+              <div class="tracking-event-detail">session ses_1741... · referrer: /registration</div>
+            </div>
+            <span class="tracking-event-time">10s ago</span>
+          </div>
+          <div class="tracking-event">
+            <span class="tracking-event-dot visit"></span>
+            <div>
+              <div class="tracking-event-type" style="color:var(--cyan)">Page View</div>
+              <div class="tracking-event-detail">/ · mentordorendimento.com</div>
+              <div class="tracking-event-detail">utm_source=google · organic</div>
+            </div>
+            <span class="tracking-event-time">8s ago</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tracking-features reveal">
+        <div class="tracking-feature">
+          <div class="tracking-feature-icon" style="background:var(--cyan-glow);color:var(--cyan);border:1px solid rgba(6,182,212,0.2);border-radius:8px">🌐</div>
+          <div>
+            <h4>Automatic Page Tracking</h4>
+            <p>Every page view captured — including SPA navigation. Session grouping, referrer detection, and device info collected automatically.</p>
+          </div>
+        </div>
+        <div class="tracking-feature">
+          <div class="tracking-feature-icon" style="background:var(--emerald-glow);color:var(--emerald);border:1px solid rgba(16,185,129,0.2);border-radius:8px">📬</div>
+          <div>
+            <h4>UTM & Click ID Capture</h4>
+            <p>utm_source, utm_medium, utm_campaign, utm_content, utm_term, fbclid, gclid — first-touch attribution stored in session.</p>
+          </div>
+        </div>
+        <div class="tracking-feature">
+          <div class="tracking-feature-icon" style="background:var(--violet-glow);color:var(--violet);border:1px solid rgba(139,92,246,0.2);border-radius:8px">🔐</div>
+          <div>
+            <h4>Encrypted at Rest</h4>
+            <p>Name, email, phone encrypted with AES-256-GCM before storage. Searchable email hashes via HMAC-SHA256 — find leads without decrypting.</p>
+          </div>
+        </div>
+        <div class="tracking-feature">
+          <div class="tracking-feature-icon" style="background:var(--pink-glow);color:var(--pink);border:1px solid rgba(236,72,153,0.2);border-radius:8px">⚡</div>
+          <div>
+            <h4>Non-Blocking</h4>
+            <p>Uses sendBeacon with fetch fallback. Zero impact on page load. Silent failure — tracking never breaks your site.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════ LEADS TABLE ═══════ -->
+<section class="dashboard-section" id="leads">
+  <div class="container">
+    <div class="section-label pink reveal">Lead Management</div>
+    <h2 class="section-title reveal">Filter. Qualify. Convert.<br>All in one place.</h2>
+    <p class="section-desc reveal">Search by name, email, phone. Filter by date, campaign, status. Click any lead to update status, add notes, or view full attribution chain.</p>
+
+    <div class="table-preview reveal">
+      <div class="table-toolbar">
+        <div class="table-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          Search leads...
+        </div>
+        <div class="table-filter">Campaign ▾</div>
+        <div class="table-filter">Status ▾</div>
+        <div class="table-filter">Date range ▾</div>
+        <div class="table-toolbar-right">
+          <div class="table-btn">⬇ Export XLSX</div>
+          <div class="table-btn primary">↻ Sync Sheets</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Campaign</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-name">Ana Martins</td>
+            <td class="td-email">ana.m***@gmail.com</td>
+            <td>+55 •••-8821</td>
+            <td>br_invest_mar26</td>
+            <td><span class="status-badge qualified">Qualified</span></td>
+            <td>Mar 12, 14:23</td>
+          </tr>
+          <tr>
+            <td class="td-name">Lucas Ferreira</td>
+            <td class="td-email">lucas.f***@hotmail.com</td>
+            <td>+55 •••-4510</td>
+            <td>br_mentor_cold</td>
+            <td><span class="status-badge converted">Converted</span></td>
+            <td>Mar 12, 13:58</td>
+          </tr>
+          <tr>
+            <td class="td-name">Maria Silva</td>
+            <td class="td-email">maria.s***@outlook.com</td>
+            <td>+55 •••-7733</td>
+            <td>br_invest_mar26</td>
+            <td><span class="status-badge lead">Lead</span></td>
+            <td>Mar 12, 12:41</td>
+          </tr>
+          <tr>
+            <td class="td-name">Pedro Almeida</td>
+            <td class="td-email">pedro.a***@gmail.com</td>
+            <td>+55 •••-2290</td>
+            <td>br_mentor_retarget</td>
+            <td><span class="status-badge qualified">Qualified</span></td>
+            <td>Mar 12, 11:15</td>
+          </tr>
+          <tr>
+            <td class="td-name">Carlos Eduardo</td>
+            <td class="td-email">carlos.e***@yahoo.com</td>
+            <td>+55 •••-5518</td>
+            <td>br_invest_mar26</td>
+            <td><span class="status-badge disqualified">Disqualified</span></td>
+            <td>Mar 12, 10:02</td>
+          </tr>
+          <tr>
+            <td class="td-name">Juliana Costa</td>
+            <td class="td-email">juli.c***@gmail.com</td>
+            <td>+55 •••-9901</td>
+            <td>br_mentor_cold</td>
+            <td><span class="status-badge lead">Lead</span></td>
+            <td>Mar 11, 22:47</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════ SECURITY ═══════ -->
+<section id="security">
+  <div class="container">
+    <div class="section-label yellow reveal">Security</div>
+    <h2 class="section-title reveal">Enterprise security.<br>No enterprise price.</h2>
+    <p class="section-desc reveal">PII encryption, audit trails, rate limiting, and role-based access — built in from day one, not bolted on.</p>
+
+    <div class="security-grid">
+      <div class="security-card reveal">
+        <h3>🔐 Data Encryption</h3>
+        <ul>
+          <li>AES-256-GCM field-level encryption for PII</li>
+          <li>Unique IV per encryption operation</li>
+          <li>HMAC-SHA256 searchable email hashes</li>
+          <li>Encryption keys never leave the server</li>
+        </ul>
+      </div>
+      <div class="security-card reveal reveal-delay-1">
+        <h3>📋 Audit Logging</h3>
+        <ul>
+          <li>Every PII decryption logged with user + IP</li>
+          <li>Login attempts tracked (success + failure)</li>
+          <li>Export actions audit-trailed</li>
+          <li>Admin-only security dashboard</li>
+        </ul>
+      </div>
+      <div class="security-card reveal reveal-delay-2">
+        <h3>🛡️ Access Control</h3>
+        <ul>
+          <li>Role-based permissions (admin / user)</li>
+          <li>Copy protection for non-admin users</li>
+          <li>Export and sync restricted to admins</li>
+          <li>Session management with version control</li>
+        </ul>
+      </div>
+      <div class="security-card reveal reveal-delay-3">
+        <h3>⚡ Rate Limiting</h3>
+        <ul>
+          <li>API rate limiting: 100 req/min</li>
+          <li>Login brute-force protection: 5 attempts/5 min</li>
+          <li>Account lockout after failed attempts</li>
+          <li>HMAC webhook signature verification</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════ CTA ═══════ -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box reveal">
+      <h2>Ready to see your leads<br><span class="gradient-text" style="background:linear-gradient(135deg,var(--violet),var(--cyan),var(--emerald));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">in real time?</span></h2>
+      <p>One script tag on your site. Five minutes to first data. Full attribution from click to conversion.</p>
+      <a href="mailto:nikola@peopledown.local" class="btn btn-primary" style="font-size:17px;padding:16px 36px">
+        Get started →
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>PeopleDown Analytics · Built for performance marketers</p>
+  </div>
+</footer>
+
+<!-- ═══════ SCRIPTS ═══════ -->
+<script>
+// Nav scroll effect
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Animate stat numbers
+function animateValue(el, start, end, duration, suffix = '') {
+  const startTime = performance.now();
+  const update = (now) => {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(start + (end - start) * eased);
+    el.textContent = current.toLocaleString() + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+// Animate dashboard KPIs when visible
+const kpiObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const kpis = entry.target.querySelectorAll('.dash-kpi-value');
+      if (kpis[0]) animateValue(kpis[0], 0, 2847, 1500, '');
+      if (kpis[1]) animateValue(kpis[1], 0, 34, 800, '');
+      if (kpis[2]) animateValue(kpis[2], 0, 1204, 1200, '');
+      if (kpis[3]) animateValue(kpis[3], 0, 389, 1000, '');
+      kpiObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+const dashMain = document.querySelector('.dash-main');
+if (dashMain) kpiObserver.observe(dashMain);
+</script>
+
+</body>
+</html>
